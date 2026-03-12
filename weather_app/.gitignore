@@ -1,0 +1,19 @@
+# Security
+.env
+
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# Databases
+*.db
+*.sqlite3
+weather.db
+
+# Python & IDE Cache
+__pycache__/
+*.pyc
+.pytest_cache/
+.idea/
+.DS_Store

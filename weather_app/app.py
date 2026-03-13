@@ -9,10 +9,10 @@ load_dotenv()
 app = Flask(__name__)
 
 
-# --- SQLITE DATABASE SETUP ---
+# SQLITE DATABASE SETUP
 def init_db():
     with sqlite3.connect('weather.db') as conn:
-        # UNIQUE ensures we don't save "London" 5 times in a row
+        # UNIQUE ensures not saving "London" 5 times in a row
         conn.execute('''CREATE TABLE IF NOT EXISTS searches 
                         (id INTEGER PRIMARY KEY AUTOINCREMENT, 
                         city TEXT UNIQUE, 
@@ -49,7 +49,7 @@ def home():
         if city_name:
             weather_result = get_weather_data(api_key=api_key, city_name=city_name)
             if weather_result and weather_result.get("success"):
-                add_to_history(weather_result["city"])  # Save to SQLite!
+                add_to_history(weather_result["city"])  # Save to SQLite
                 history = get_history()  # Refresh history list
     elif lat and lon:
         weather_result = get_weather_data(api_key=api_key, lat=lat, lon=lon)

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="{{ data.weather_type if data else 'default' }}">
+    <div class="main-container">
+        <div class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</div>
+        <h1>Weather Dashboard</h1>
+
+        <form method="POST" action="/" id="searchForm">
+            <div style="position: relative; flex: 1;">
+                <input type="text" name="city" id="cityInput" placeholder="Enter city..." autocomplete="off">
+                <ul id="suggestionsList" class="autocomplete-list"></ul>
+            </div>
+            <button type="submit">Search</button>
+            <button type="button" class="geo-btn" onclick="getLocation()">📍</button>
+        </form>
+
+
+        {% if history %}
+        <div class="recent-history">
+            Recent:
+            {% for past_city in history %}
+                <span class="history-link" onclick="document.getElementById('cityInput').value='{{ past_city }}'; document.getElementById('searchForm').submit();">
+                    {{ past_city }}
+                </span>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <p id="loading-text" style="display: none; color: white; font-size: 0.9rem; margin-bottom: 15px;">
+            Fetching latest data...
+        </p>
+
+        {% if error %}
+        <div class="error-box">
+            <p>❌ {{ error }}</p>
+        </div>
+        {% endif %}
+
+        {% if data %}
+            <div class="weather-results" id="results-panel">
+                <h2>{{ data.city }}</h2>
+                <img src="http://openweathermap.org/img/wn/{{ data.icon }}@4x.png" class="main-icon">
+                <h1 class="temp">{{ data.temp }}°C</h1>
+                <p class="desc">{{ data.weather }}</p>
+
+                <div class="aqi-container">
+                    Air Quality: <span class="aqi-badge aqi-{{ data.aqi }}">{{ data.aqi_text }}</span>
+                    <div class="aqi-details">
+                        <small>PM2.5: {{ data.pm25 }} | PM10: {{ data.pm10 }}</small>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div>💧 Humidity: <strong>{{ data.humidity }}%</strong></div>
+                    <div>💨 Wind: <strong>{{ data.wind }}m/s</strong></div>
+                    <div>🌡️ Feels Like: <strong>{{ data.feels_like }}°C</strong></div>
+                    <div>⏲️ Pressure: <strong>{{ data.pressure }}</strong></div>
+                </div>
+
+                <div class="forecast-container">
+                    {% for day in data.forecast %}
+                    <div class="forecast-day">
+                        <p>{{ day.date }}</p>
+                        <img src="http://openweathermap.org/img/wn/{{ day.icon }}.png" alt="weather icon">
+                        <p><strong>{{ day.temp }}°</strong></p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="chart-container" style="position: relative; height: 180px; width: 100%; margin-top: 25px;">
+                    <canvas id="tempChart"></canvas>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Form Loading Animation UX
+        document.getElementById('searchForm').addEventListener('submit', function() {
+            document.getElementById('loading-text').style.display = 'block';
+            let results = document.getElementById('results-panel');
+            if (results) { results.style.opacity = '0.4'; }
+        });
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                document.getElementById('loading-text').style.display = 'block';
+                let results = document.getElementById('results-panel');
+                if (results) { results.style.opacity = '0.4'; }
+
+                navigator.geolocation.getCurrentPosition(pos => {
+                    window.location.href = `/?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}`;
+                }, () => {
+                    document.getElementById('loading-text').style.display = 'none';
+                    if (results) { results.style.opacity = '1'; }
+                    alert("Unable to retrieve your location.");
+                });
+            }
+        }
+
+        // --- THEME TOGGLE LOGIC ---
+        const themeToggleBtn = document.querySelector('.theme-toggle');
+        let tempChart; // Declare chart globally so we can update its colors later!
+
+        // 1. Check initial theme
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-mode');
+            themeToggleBtn.innerHTML = '☀️ Light Mode';
+        }
+
+        // 2. The Toggle Function
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+
+            if (isLight) {
+                themeToggleBtn.innerHTML = '☀️ Light Mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                themeToggleBtn.innerHTML = '🌙 Dark Mode';
+                localStorage.setItem('theme', 'dark');
+            }
+
+            // THE FIX: Dynamically update the Chart colors when the button is clicked!
+            if (tempChart) {
+                const textColor = isLight ? '#2c3e50' : '#ffffff';
+                const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+
+                tempChart.options.plugins.legend.labels.color = textColor;
+                tempChart.options.scales.x.ticks.color = textColor;
+                tempChart.options.scales.y.ticks.color = textColor;
+                tempChart.options.scales.y.grid.color = gridColor;
+                tempChart.update(); // Force the chart to redraw!
+            }
+        }
+
+        // --- CHART JS INITIALIZATION ---
+        {% if data and data.forecast %}
+            const forecastData = {{ data.forecast | tojson | safe }};
+            const dates = forecastData.map(day => day.date);
+            const temps = forecastData.map(day => day.temp);
+
+            // Determine correct text color on initial page load
+            const isCurrentlyLight = document.body.classList.contains('light-mode');
+            const initTextColor = isCurrentlyLight ? '#2c3e50' : '#ffffff';
+            const initGridColor = isCurrentlyLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+
+            const ctx = document.getElementById('tempChart').getContext('2d');
+            tempChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: temps,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#3498db',
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: initTextColor, font: { family: 'Poppins' } } }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: initTextColor, font: { family: 'Poppins' } },
+                            grid: { display: false }
+                        },
+                        y: {
+                            ticks: { color: initTextColor, font: { family: 'Poppins' }, stepSize: 2 },
+                            grid: { color: initGridColor }
+                        }
+                    }
+                }
+            });
+        {% endif %}
+        // --- AUTOCOMPLETE LOGIC ---
+        const cityInput = document.getElementById('cityInput');
+        const suggestionsList = document.getElementById('suggestionsList');
+        let debounceTimer;
+
+        cityInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            const query = this.value.trim();
+
+            if (query.length < 3) {
+                suggestionsList.innerHTML = '';
+                return;
+            }
+
+            // Wait 300ms after user stops typing to save API calls (Professional Debouncing)
+            debounceTimer = setTimeout(() => {
+                fetch(`/autocomplete?q=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        suggestionsList.innerHTML = '';
+                        data.forEach(cityStr => {
+                            const li = document.createElement('li');
+                            li.textContent = cityStr;
+                            li.onclick = function() {
+                                // Extract just the city name before the first comma
+                                cityInput.value = cityStr.split(',')[0];
+                                suggestionsList.innerHTML = '';
+                                // Optional: automatically submit form when clicked
+                                // document.getElementById('searchForm').submit();
+                            };
+                            suggestionsList.appendChild(li);
+                        });
+                    });
+            }, 300);
+        });
+
+        // Close dropdown if user clicks anywhere else on the page
+        document.addEventListener('click', function(e) {
+            if (e.target !== cityInput) {
+                suggestionsList.innerHTML = '';
+            }
+        });
+    </script>
+</body>
+</html>

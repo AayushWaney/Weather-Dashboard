@@ -34,7 +34,7 @@ def get_weather_data(api_key, city_name=None, lat=None, lon=None):
                 "icon": day['weather'][0]['icon']
             })
 
-        # 3. NEW FEATURE: Fetch Air Quality Index (AQI)
+        # Fetch Air Quality Index (AQI)
         # We use the exact coordinates returned from the first API call
         city_lat = curr_data['coord']['lat']
         city_lon = curr_data['coord']['lon']
@@ -65,7 +65,7 @@ def get_weather_data(api_key, city_name=None, lat=None, lon=None):
             "pm10": aqi_data['list'][0]['components']['pm10']
         }
 
-        # NEW: Professional Error Handling Upgrade
+        # Error Handling
     except requests.exceptions.Timeout:
             # Handles when the OpenWeatherMap server is too slow
             return {"success": False, "error": "API timeout. The weather service is taking too long."}

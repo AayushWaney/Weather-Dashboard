@@ -107,7 +107,7 @@
 
         // --- THEME TOGGLE LOGIC ---
         const themeToggleBtn = document.querySelector('.theme-toggle');
-        let tempChart; // Declare chart globally so we can update its colors later!
+        let tempChart;
 
         // 1. Check initial theme
         if (localStorage.getItem('theme') === 'light') {
@@ -128,7 +128,7 @@
                 localStorage.setItem('theme', 'dark');
             }
 
-            // THE FIX: Dynamically update the Chart colors when the button is clicked!
+            // Dynamically update the Chart colors when the button is clicked
             if (tempChart) {
                 const textColor = isLight ? '#2c3e50' : '#ffffff';
                 const gridColor = isLight ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
@@ -137,7 +137,7 @@
                 tempChart.options.scales.x.ticks.color = textColor;
                 tempChart.options.scales.y.ticks.color = textColor;
                 tempChart.options.scales.y.grid.color = gridColor;
-                tempChart.update(); // Force the chart to redraw!
+                tempChart.update(); // Force the chart to redraw
             }
         }
 

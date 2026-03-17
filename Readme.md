@@ -65,7 +65,7 @@ This project relies on the OpenWeatherMap API suite (Current Weather, 5-Day Fore
 ---
 
 ## 📸 Screenshots
-*(screenshot links will be added later)*
+
 ### 1. Dynamic Dashboard & AQI
 *(Featuring weather-specific backgrounds and real-time air quality badging)*
 ![Dashboard and AQI](weather_app/static/images/screenshots/screenshot1.png)

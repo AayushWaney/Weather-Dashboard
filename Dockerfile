@@ -16,5 +16,5 @@ COPY . .
 # Expose port 10000 (Render's default port)
 EXPOSE 10000
 
-# Run gunicorn, binding it to 0.0.0.0 and port 10000
-CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:10000"]
+# Run gunicorn, changing to the weather_app directory first
+CMD ["gunicorn", "--chdir", "weather_app", "app:app", "--bind", "0.0.0.0:10000"]

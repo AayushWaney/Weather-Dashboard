@@ -3,14 +3,19 @@
 ![Flask](https://img.shields.io/badge/Framework-Flask-green)
 ![API](https://img.shields.io/badge/API-OpenWeatherMap-orange)
 ![Docker](https://img.shields.io/badge/Container-Docker-2496ED)
+![Render](https://img.shields.io/badge/Deployed-Render-purple)
 
-A full-stack, responsive weather application that aggregates real-time meteorological data, air quality indices, and interactive forecasting using external APIs and local database persistence.
+A full-stack, cloud-deployed weather application that aggregates real-time meteorological data, air quality indices, and interactive forecasting using external APIs and local database persistence.
 
 ---
 
-## 🎥 Demo
+## 🎥 Live Demo
 
- *(Note: Demo gif will be added later)*
+**🌍 [View Live Weather Dashboard Here](https://weather-dashboard-onvk.onrender.com)**
+
+*(Note: As this is hosted on a free cloud tier, the server may take ~50 seconds to wake up from sleep mode on the first click).*
+
+![Weather Dashboard Demo](weather_app/static/images/screenshots/demo.gif)
 
 ---
 
@@ -32,13 +37,11 @@ This project relies on the OpenWeatherMap API suite (Current Weather, 5-Day Fore
 
 ## 🎯 Skills Demonstrated
 
-* REST API integration
-* Backend service architecture
-* Data visualization with Chart.js
-* Database persistence with SQLite
-* Error handling and defensive programming
-* Full-stack web development with Flask
-
+* **Backend Architecture:** MVC design pattern, Python/Flask routing, and SQLite database persistence.
+* **API Engineering:** RESTful API integration, JSON payload parsing, and asynchronous JavaScript fetching.
+* **DevOps & Containerization:** Writing production-grade Dockerfiles, port binding, and cloud deployment via Render.
+* **Frontend Development:** Responsive UI design, glassmorphism CSS, DOM manipulation, and data visualization using Chart.js.
+* **Defensive Programming:** Robust error handling for HTTP 404s/401s, network timeouts, and UI fallback states.
 ---
 
 ## 🛠 Tech Stack
@@ -65,15 +68,16 @@ This project relies on the OpenWeatherMap API suite (Current Weather, 5-Day Fore
 *(screenshot links will be added later)*
 ### 1. Dynamic Dashboard & AQI
 *(Featuring weather-specific backgrounds and real-time air quality badging)*
-
+![Dashboard and AQI](weather_app/static/images/screenshots/screenshot1.png)
 
 ### 2. Interactive Data Visualization
 *(Responsive 5-day forecast plotted with Chart.js)*
 
+![Data Visualization](weather_app/static/images/screenshots/screenshot2.png)
 
 ### 3. Smart Autocomplete & Light Mode
 *(Debounced geocoding search with frosted-glass light mode UI)*
-
+![Autocomplete and Light Mode](weather_app/static/images/screenshots/screenshot3.png)
 
 ---
 
@@ -97,7 +101,13 @@ This application adheres to a modular **Model-View-Controller (MVC)** architectu
 * **View (`index.html`):** A highly responsive frontend utilizing Jinja2 templating, dynamic CSS classes, and JavaScript for chart rendering and theme management.
 
 ---
+## 💡 Key Engineering Challenges Solved
 
+- Implementing frontend debouncing to reduce API load and improve UX.
+- Handling API rate limits and network failures gracefully.
+- Designing a modular service layer for scalable API integration.
+- Persisting user search history using SQLite without compromising performance.
+---
 ## 💻 Local Installation
 1. Clone the repository and create a virtual environment:
     ```bash
@@ -129,7 +139,6 @@ Create a .env file in the root directory and add your OpenWeatherMap API key:
 
 ## 🔮 Future Improvements
 * Implement user authentication (OAuth) for personalized weather alert subscriptions.
-* Deploy the application to a cloud provider (AWS/Render) using the included Docker configuration.
 * Integrate interactive precipitation radar mapping using Leaflet.js.
 
 ---

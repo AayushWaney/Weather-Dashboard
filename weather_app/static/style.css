@@ -17,8 +17,22 @@ body.default { background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100
 body.clear-day { background-image: url('images/clear-day.png'); }
 body.clear-night { background-image: url('images/clear-night.png'); }
 body.clouds, body.clouds-day, body.clouds-night { background-image: url('images/clouds.png'); }
-body.rain, body.drizzle, body.thunderstorm { background-image: url('images/rain.png'); }
+
+/* The "Wet" Weather Group */
+body.rain, body.drizzle { background-image: url('images/rain.png'); }
+
+/* The Snow Group */
 body.snow { background-image: url('images/snow.png'); }
+
+/* The "Atmosphere/Low Visibility" Group */
+body.haze, body.mist, body.fog, body.smoke, body.dust, body.sand, body.ash {
+    background-image: url('images/haze.png');
+}
+
+/* ⚡ The "Severe" Weather Group */
+body.thunderstorm, body.squall, body.tornado {
+    background-image: url('images/thunderstorm.png');
+}
 
 /* 2. THE ULTIMATE DASHBOARD STYLE */
 .main-container {

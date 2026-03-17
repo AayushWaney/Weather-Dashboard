@@ -1,18 +1,20 @@
-# Use official Python image
+# Use an official Python runtime as a parent image
 FROM python:3.11-slim
 
-# Set the working directory
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy requirements and install them securely
+# Copy the requirements file into the container
 COPY requirements.txt .
+
+# Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application
+# Copy the current directory contents into the container at /app
 COPY . .
 
-# Expose the Flask port
-EXPOSE 5000
+# Expose port 10000 (Render's default port)
+EXPOSE 10000
 
-# Command to run the application
-CMD ["flask", "run", "--host=0.0.0.0"]
+# Run gunicorn, binding it to 0.0.0.0 and port 10000
+CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:10000"]

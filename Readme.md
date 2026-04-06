@@ -5,7 +5,7 @@
 ![Docker](https://img.shields.io/badge/Container-Docker-2496ED)
 ![Render](https://img.shields.io/badge/Deployed-Render-purple)
 
-A full-stack, cloud-deployed weather application that aggregates real-time meteorological data, air quality indices, and interactive forecasting using external APIs and local database persistence.
+A full-stack, cloud-deployed weather app that fetches real-time data, air quality, and forecasts using external APIs and local database persistence.
 
 ---
 
@@ -20,7 +20,7 @@ A full-stack, cloud-deployed weather application that aggregates real-time meteo
 ---
 
 ## ⚠️ API Integration & Performance Handling
-This project relies on the OpenWeatherMap API suite (Current Weather, 5-Day Forecast, Air Pollution, and Geocoding). To ensure optimal performance and prevent API rate-limiting, the backend utilizes structured exception handling for network timeouts, and the frontend implements 300ms JavaScript debouncing on the autocomplete search functionality. 
+This project relies on the OpenWeatherMap API suite (Current Weather, 5-Day Forecast, Air Pollution, and Geocoding). To ensure optimal performance and prevent API rate-limiting, the backend handles API failures using try/except blocks, and the frontend implements 300ms debouncing to reduce API calls. 
 
 ---
 
@@ -28,20 +28,21 @@ This project relies on the OpenWeatherMap API suite (Current Weather, 5-Day Fore
 
 - **Live Environmental Metrics:** Displays real-time temperature, humidity, wind speed and localized Air Quality Index (AQI) with PM2.5/PM10 breakdowns.
 - **Interactive Data Visualization:** 5-day temperature forecasting rendered dynamically via curved, responsive `Chart.js` line graphs.
-- **Smart Autocomplete Search:** Asynchronous city suggestions using the OWM Geocoding API with professional input debouncing.
+- **Autocomplete Search:** Asynchronous city suggestions using the OWM Geocoding API with 300ms debouncing to reduce API calls.
 - **Persistent Search History:** Local `SQLite3` database integration that securely saves and displays recent successful queries for one-click access.
-- **Dynamic UX/UI:** Weather-responsive photographic backgrounds that change based on current API conditions, paired with a persistent Dark/Light mode toggle (saved via browser `localStorage`).
-- **Defensive Engineering:** Robust backend error handling that catches 404s, 401s, and network timeouts to display specific, user-friendly UI alerts.
+- **Weather-Responsive UI:** Photographic backgrounds that change based on current API conditions, paired with a persistent Dark/Light mode toggle (saved via browser `localStorage`).
+- **Error Handling:** Handles invalid cities, API failures (404/401), and network timeouts with clear user feedback.
 
 ---
 
-## 🎯 Skills Demonstrated
+## 🎯 What I Worked On
 
 * **Backend Architecture:** MVC design pattern, Python/Flask routing, and SQLite database persistence.
 * **API Engineering:** RESTful API integration, JSON payload parsing, and asynchronous JavaScript fetching.
 * **DevOps & Containerization:** Writing production-grade Dockerfiles, port binding, and cloud deployment via Render.
 * **Frontend Development:** Responsive UI design, glassmorphism CSS, DOM manipulation, and data visualization using Chart.js.
-* **Defensive Programming:** Robust error handling for HTTP 404s/401s, network timeouts, and UI fallback states.
+* **Error Handling:** Managing HTTP 404s/401s and network timeouts with try/except blocks and UI fallback states.
+
 ---
 
 ## 🛠 Tech Stack
@@ -72,11 +73,10 @@ This project relies on the OpenWeatherMap API suite (Current Weather, 5-Day Fore
 
 ### 2. Interactive Data Visualization
 *(Responsive 5-day forecast plotted with Chart.js)*
-
 ![Data Visualization](weather_app/static/images/screenshots/screenshot2.png)
 
-### 3. Smart Autocomplete & Light Mode
-*(Debounced geocoding search with frosted-glass light mode UI)*
+### 3. Autocomplete & Light Mode
+*(300ms debouncing to reduce API calls with frosted-glass light mode UI)*
 ![Autocomplete and Light Mode](weather_app/static/images/screenshots/screenshot3.png)
 
 ---
@@ -85,9 +85,9 @@ This project relies on the OpenWeatherMap API suite (Current Weather, 5-Day Fore
 
 1. **Input:** User types a location. The frontend sends debounced requests to the Geocoding API to suggest matching global cities.
 2. **Routing:** Upon submission, the Flask controller routes the city name (or Geolocation coordinates) to the Python service layer.
-3. **Data Aggregation:** `weather_service.py` sends requests to OpenWeatherMap APIs to gather current weather, a 5-day forecast list, and localized air pollution data.
+3. **Data Fetching:** `weather_service.py` sends requests to OpenWeatherMap APIs to fetch current weather, a 5-day forecast list, and localized air pollution data.
 4. **Persistence:** If the API call is successful (HTTP 200), the city is saved to the local `SQLite` database.
-5. **Exception Handling:** If the city is invalid or the network drops, specific HTTP errors are caught and parsed into readable UI alerts.
+5. **Exception Handling:** If the city is invalid or the network drops, specific HTTP errors are caught using try/except and parsed into readable UI alerts.
 6. **Output:** The Flask controller passes the consolidated JSON payload to the Jinja template, triggering `Chart.js` to draw the graph and the CSS to update the dynamic background.
 
 ---
@@ -101,13 +101,16 @@ This application adheres to a modular **Model-View-Controller (MVC)** architectu
 * **View (`index.html`):** A highly responsive frontend utilizing Jinja2 templating, dynamic CSS classes, and JavaScript for chart rendering and theme management.
 
 ---
-## 💡 Key Engineering Challenges Solved
 
-- Implementing frontend debouncing to reduce API load and improve UX.
-- Handling API rate limits and network failures gracefully.
+## 💡 Challenges & Solutions
+
+- Implementing 300ms frontend debouncing to reduce API load and improve UX.
+- Handling API rate limits and network failures gracefully using try/except.
 - Designing a modular service layer for scalable API integration.
 - Persisting user search history using SQLite without compromising performance.
+
 ---
+
 ## 💻 Local Installation
 1. Clone the repository and create a virtual environment:
     ```bash
@@ -116,12 +119,12 @@ This application adheres to a modular **Model-View-Controller (MVC)** architectu
     python -m venv venv
     source venv/bin/activate  # On Windows use `venv\Scripts\activate`
     ```
-2. Install the required dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
+   2. Install the required dependencies:
+       ```bash
+       pip install -r requirements.txt
+       ```
 3. Set up your Environment Variables:
-Create a .env file in the root directory and add your OpenWeatherMap API key:
+Create a `.env` file in the root directory and add your OpenWeatherMap API key:
     ```bash
     API_KEY=openweathermap_api_key_here
     ```
@@ -133,7 +136,7 @@ Create a .env file in the root directory and add your OpenWeatherMap API key:
     ```bash
     http://127.0.0.1:5000
     ```
-(Optional) To run the automated unit tests, execute `pytest test_weather_service.py` in your terminal.
+*(Optional) To run the automated unit tests, execute `pytest test_weather_service.py` in your terminal.*
 
 ---
 
